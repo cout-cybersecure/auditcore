@@ -1,0 +1,18 @@
+name: kubernetes
+version: 0.1.0
+purpose: |
+  Interpret Kubernetes evidence: RBAC, PodSecurity, NetworkPolicies, image
+  risks, resource limits, exposed services, autoscaling, runtime risks.
+  Produce hardening + optimization findings.
+
+task_kind: REASON
+budget_hint: normal
+privacy: standard
+
+inputs:
+  - run_id
+  - asset_ids: list[UUID]
+  - evidence_ids: list[UUID]   # filtered to category=kubernetes
+
+output_schema: ../_shared/domain_agent_output.json
+system_prompt: prompts/system.md

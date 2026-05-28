@@ -1,0 +1,22 @@
+# Per-million-token pricing (USD). Update as providers shift pricing.
+# Gateway returns cost=0.0 for any (provider, model) missing from this table.
+
+anthropic:
+  claude-haiku-4-5-20251001: { input_per_1m: 1.00, output_per_1m: 5.00 }
+  claude-sonnet-4-6:         { input_per_1m: 3.00, output_per_1m: 15.00 }
+  claude-opus-4-7:           { input_per_1m: 15.00, output_per_1m: 75.00 }
+
+openai:
+  gpt-4.1-mini:              { input_per_1m: 0.40, output_per_1m: 1.60 }
+  gpt-5-mini:                { input_per_1m: 0.50, output_per_1m: 2.00 }
+  gpt-5:                     { input_per_1m: 5.00, output_per_1m: 20.00 }
+
+google:
+  gemini-1.5-flash:          { input_per_1m: 0.15, output_per_1m: 0.60 }
+  gemini-2.0-pro:            { input_per_1m: 2.50, output_per_1m: 10.00 }
+  gemini-2.0-pro-1m:         { input_per_1m: 3.50, output_per_1m: 14.00 }
+
+local:
+  llama-3.1-8b-instruct:     { input_per_1m: 0.00, output_per_1m: 0.00 }
+  llama-3.1-70b-instruct:    { input_per_1m: 0.00, output_per_1m: 0.00 }
+  deepseek-coder-33b:        { input_per_1m: 0.00, output_per_1m: 0.00 }

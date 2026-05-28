@@ -1,0 +1,86 @@
+# Default model routing table for AuditCore.
+# Resolved by (task_kind, budget_hint, privacy). Per-tenant overrides
+# live in Postgres and take precedence.
+
+defaults:
+  SUMMARIZE:
+    low:
+      primary:   { provider: anthropic, model: claude-haiku-4-5-20251001 }
+      secondary: { provider: openai,    model: gpt-4.1-mini }
+      tertiary:  { provider: google,    model: gemini-1.5-flash }
+    normal:
+      primary:   { provider: anthropic, model: claude-haiku-4-5-20251001 }
+      secondary: { provider: openai,    model: gpt-4.1-mini }
+    high:
+      primary:   { provider: anthropic, model: claude-sonnet-4-6 }
+      secondary: { provider: openai,    model: gpt-5 }
+
+  CLASSIFY:
+    low:
+      primary:   { provider: anthropic, model: claude-haiku-4-5-20251001 }
+      secondary: { provider: local,     model: llama-3.1-8b-instruct }
+    normal:
+      primary:   { provider: anthropic, model: claude-haiku-4-5-20251001 }
+      secondary: { provider: openai,    model: gpt-4.1-mini }
+    high:
+      primary:   { provider: anthropic, model: claude-sonnet-4-6 }
+
+  REASON:
+    low:
+      primary:   { provider: anthropic, model: claude-sonnet-4-6 }
+      secondary: { provider: openai,    model: gpt-5-mini }
+    normal:
+      primary:   { provider: anthropic, model: claude-opus-4-7 }
+      secondary: { provider: openai,    model: gpt-5 }
+      tertiary:  { provider: google,    model: gemini-2.0-pro }
+    high:
+      primary:   { provider: anthropic, model: claude-opus-4-7, critic_loop: true }
+      secondary: { provider: openai,    model: gpt-5 }
+
+  LONG_CONTEXT:
+    low:
+      primary:   { provider: anthropic, model: claude-sonnet-4-6 }
+    normal:
+      primary:   { provider: anthropic, model: claude-sonnet-4-6 }
+      secondary: { provider: google,    model: gemini-2.0-pro-1m }
+    high:
+      primary:   { provider: anthropic, model: claude-opus-4-7 }
+
+  CODE:
+    low:
+      primary:   { provider: anthropic, model: claude-sonnet-4-6 }
+    normal:
+      primary:   { provider: anthropic, model: claude-sonnet-4-6 }
+      secondary: { provider: openai,    model: gpt-5 }
+    high:
+      primary:   { provider: anthropic, model: claude-opus-4-7 }
+
+# Privacy overrides ALWAYS win over budget_hint.
+privacy_overrides:
+  sensitive:
+    # Providers with signed DPA + zero-retention configuration only.
+    allowed_providers: [anthropic, openai]
+    deny_providers: [google]
+    require_zero_retention: true
+
+  air_gapped:
+    # No egress allowed. Network policy enforces; routing only picks local.
+    allowed_providers: [local]
+    routes:
+      SUMMARIZE:    { primary: { provider: local, model: llama-3.1-8b-instruct } }
+      CLASSIFY:     { primary: { provider: local, model: llama-3.1-8b-instruct } }
+      REASON:       { primary: { provider: local, model: llama-3.1-70b-instruct } }
+      LONG_CONTEXT: { primary: { provider: local, model: llama-3.1-70b-instruct } }
+      CODE:         { primary: { provider: local, model: deepseek-coder-33b } }
+
+# Health + fallback behavior
+fallback:
+  consecutive_failure_threshold: 3
+  cooldown_seconds: 300
+  escalate_on_schema_failure: true   # bump up one tier when output validation fails
+
+# Cost guardrails (per-run; per-tenant lives in DB)
+cost_caps:
+  default_run_soft_cap_usd: 5.00
+  default_run_hard_cap_usd: 25.00
+  on_hard_cap: degrade   # degrade | abort

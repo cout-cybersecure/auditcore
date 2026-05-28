@@ -1,0 +1,99 @@
+{
+  "$defs": {
+    "RunStatus": {
+      "enum": [
+        "planning",
+        "collecting",
+        "normalizing",
+        "analyzing",
+        "scoring",
+        "blueprinting",
+        "reporting",
+        "complete",
+        "failed"
+      ],
+      "title": "RunStatus",
+      "type": "string"
+    }
+  },
+  "$id": "https://schemas.auditcore.dev/v1/run.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "collection_plan": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Collection Plan"
+    },
+    "completed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "cost_cents": {
+      "default": 0,
+      "title": "Cost Cents",
+      "type": "integer"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "parent_run_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Run Id"
+    },
+    "scope": {
+      "additionalProperties": true,
+      "title": "Scope",
+      "type": "object"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/RunStatus"
+    },
+    "tenant_id": {
+      "format": "uuid",
+      "title": "Tenant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "tenant_id",
+    "scope",
+    "status",
+    "started_at"
+  ],
+  "title": "Run",
+  "type": "object"
+}

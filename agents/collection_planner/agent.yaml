@@ -1,0 +1,23 @@
+name: collection_planner
+version: 0.1.0
+purpose: |
+  Turn an intake plan into a concrete, ordered list of collection steps.
+  Maps each `required_collector` from intake to specific tool invocations
+  with target identifiers and a safe-command policy tag.
+
+task_kind: REASON
+budget_hint: low
+privacy: standard
+
+inputs:
+  - intake_output: object
+  - allowlist: array            # the active tool allowlist (Phase 1: linux read-only)
+
+output_schema: schemas/output.json
+system_prompt: prompts/system.md
+
+contract:
+  - Every step's `tool` MUST appear in the input `allowlist`.
+  - Any step that needs elevated privilege MUST set `requires_elevated: true`
+    AND populate `justification`.
+  - Output MUST validate against the JSON Schema.

@@ -1,0 +1,11 @@
+{
+  "Asset": "schemas/asset.json",
+  "BlueprintItem": "schemas/blueprint_item.json",
+  "EvidenceItem": "schemas/evidence_item.json",
+  "Finding": "schemas/finding.json",
+  "Recommendation": "schemas/recommendation.json",
+  "ReportSection": "schemas/report_section.json",
+  "RiskScore": "schemas/risk_score.json",
+  "Run": "schemas/run.json",
+  "VerificationTest": "schemas/verification_test.json"
+}

@@ -1,0 +1,22 @@
+name: verification
+version: 0.1.0
+purpose: |
+  For each finding, define a deterministic before/after test that proves
+  the remediation worked. Tests are commands, scans, metric checks, or
+  database queries — runnable by the verification-engine.
+
+task_kind: REASON
+budget_hint: low
+privacy: standard
+
+inputs:
+  - run_id
+  - findings: list[Finding]
+
+output_schema: schemas/output.json
+system_prompt: prompts/system.md
+
+contract:
+  - Every test MUST reference exactly one finding_id from the input.
+  - `kind` MUST match the spec shape (command/scan/metric_check/query).
+  - Tests MUST be read-only.

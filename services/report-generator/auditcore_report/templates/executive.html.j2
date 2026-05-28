@@ -1,0 +1,47 @@
+{% extends "_base.html.j2" %}
+{% block title %}AuditCore Executive Report — run {{ data.run.id }}{% endblock %}
+{% block body %}
+<h1>AuditCore Executive Report</h1>
+<p class="meta">Assessment run started {{ data.run.started_at }}
+   · {{ data.assets|length }} assets in scope</p>
+
+<h2>Risk profile</h2>
+<div class="summary-bar">
+  <div class="crit"><div><strong>{{ severity_counts.critical }}</strong></div><div>critical</div></div>
+  <div class="high"><div><strong>{{ severity_counts.high }}</strong></div><div>high</div></div>
+  <div class="med"><div><strong>{{ severity_counts.medium }}</strong></div><div>medium</div></div>
+  <div class="low"><div><strong>{{ severity_counts.low }}</strong></div><div>low</div></div>
+</div>
+
+<h2>Top findings</h2>
+{% set top = data.findings | rejectattr('severity', 'eq', 'info') | list %}
+{% if top %}
+<ol>
+  {% for f in top[:5] %}
+  <li>
+    <strong>{{ f.title }}</strong>
+    <span class="sev sev-{{ f.severity }}">{{ f.severity }}</span>
+    <div class="meta">{{ f.domain }}</div>
+  </li>
+  {% endfor %}
+</ol>
+{% else %}
+<p class="meta">No actionable findings — agents have not run yet, or no issues were detected.</p>
+{% endif %}
+
+<h2>Coverage</h2>
+<table>
+  <thead><tr><th>Category</th><th>Evidence items</th></tr></thead>
+  <tbody>
+    {% set categories = {} %}
+    {% for e in data.evidence %}{% set _ = categories.update({e.category: categories.get(e.category, 0) + 1}) %}{% endfor %}
+    {% for cat, n in categories.items() %}
+    <tr><td>{{ cat }}</td><td>{{ n }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Next steps</h2>
+<p>The engineer report contains specific commands, configurations, and verification tests
+   for every finding above. Distribute it to the responsible team.</p>
+{% endblock %}

@@ -1,0 +1,84 @@
+{
+  "$id": "https://schemas.auditcore.dev/v1/recommendation.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "automation_available": {
+      "default": false,
+      "title": "Automation Available",
+      "type": "boolean"
+    },
+    "automation_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Automation Ref"
+    },
+    "blast_radius": {
+      "enum": [
+        "isolated",
+        "service",
+        "tenant",
+        "global"
+      ],
+      "title": "Blast Radius",
+      "type": "string"
+    },
+    "effort_estimate": {
+      "enum": [
+        "minutes",
+        "hours",
+        "days",
+        "weeks"
+      ],
+      "title": "Effort Estimate",
+      "type": "string"
+    },
+    "finding_id": {
+      "format": "uuid",
+      "title": "Finding Id",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "requires_change_window": {
+      "default": false,
+      "title": "Requires Change Window",
+      "type": "boolean"
+    },
+    "rollback_plan": {
+      "title": "Rollback Plan",
+      "type": "string"
+    },
+    "steps": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Steps",
+      "type": "array"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "finding_id",
+    "summary",
+    "steps",
+    "effort_estimate",
+    "blast_radius",
+    "rollback_plan"
+  ],
+  "title": "Recommendation",
+  "type": "object"
+}

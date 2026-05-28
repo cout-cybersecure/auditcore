@@ -1,0 +1,37 @@
+[project]
+name = "auditcore-ingestion-api"
+version = "0.1.0"
+description = "AuditCore ingestion API — accepts evidence bundles and triggers normalization"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "psycopg[binary,pool]>=3.2",
+    "minio>=7.2",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.4",
+    "python-multipart>=0.0.9",
+    "auditcore-models",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "httpx>=0.27",
+    "ruff>=0.5",
+]
+
+[tool.uv.sources]
+auditcore-models = { path = "../../packages/models-py", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["auditcore_ingestion"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

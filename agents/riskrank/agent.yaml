@@ -1,0 +1,49 @@
+name: riskrank
+version: 0.1.0
+purpose: |
+  Score and rank all findings produced in a run. Composite score is
+  computed deterministically; this agent only produces the rationale
+  string and validates/adjusts the per-finding sub-scores within
+  guardrails.
+
+task_kind: REASON
+budget_hint: normal
+privacy: standard
+
+inputs:
+  - run_id
+  - findings: list[Finding]
+  - assets: list[Asset]       # for asset_importance + context
+
+output_schema: schemas/riskrank_output.json
+
+scoring:
+  formula: |
+    composite = (
+        exposure        * 0.25 +
+        exploitability  * 0.20 +
+        blast_radius    * 0.15 +
+        business_impact * 0.20 +
+        asset_importance * 2  * 0.10 +   # rescaled to 0-10
+        (6 - fix_difficulty) * 2 * 0.10  # easier-to-fix gets nudged up
+    ) * confidence * 10                  # final scale 0-100
+  bounds:
+    exposure: [0, 10]
+    exploitability: [0, 10]
+    blast_radius: [0, 10]
+    business_impact: [0, 10]
+    asset_importance: [1, 5]
+    fix_difficulty: [1, 5]
+    confidence: [0.0, 1.0]
+  notes: |
+    Composite is computed by scoring-engine, NOT the model. The model
+    proposes sub-scores; the engine clamps and composes them. Model
+    output is only authoritative for `rationale`.
+
+contract:
+  - Sub-scores MUST be integers within their bounds.
+  - rationale is 1-3 sentences, must reference the asset and the
+    primary driver of the score.
+  - rank is assigned by the scoring engine after composite is computed.
+
+system_prompt: prompts/system.md

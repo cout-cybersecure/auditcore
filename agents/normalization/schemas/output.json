@@ -1,0 +1,25 @@
+{
+  "$id": "https://schemas.auditcore.dev/v1/agents/normalization_output.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NormalizationAgentOutput",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["parsed", "confidence"],
+  "properties": {
+    "parsed":         { "type": "object" },
+    "confidence":     { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+    "severity_hint":  { "enum": ["info","low","medium","high","critical", null] },
+    "asset_hint": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["type", "natural_key", "name"],
+      "properties": {
+        "type":        { "enum": ["host","vm","container","pod","k8s_node","k8s_cluster","cloud_account","cloud_resource","database","gpu","network_device","load_balancer","storage_bucket"] },
+        "natural_key": { "type": "string" },
+        "name":        { "type": "string" },
+        "attributes":  { "type": "object" }
+      }
+    },
+    "notes": { "type": "string", "maxLength": 400 }
+  }
+}

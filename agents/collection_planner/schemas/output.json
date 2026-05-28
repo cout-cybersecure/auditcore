@@ -1,0 +1,28 @@
+{
+  "$id": "https://schemas.auditcore.dev/v1/agents/collection_planner_output.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CollectionPlannerOutput",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["steps"],
+  "properties": {
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["collector_profile", "tool", "target", "timeout_sec"],
+        "properties": {
+          "collector_profile":  { "type": "string" },
+          "tool":               { "type": "string" },
+          "target":             { "type": "string" },
+          "args":               { "type": "array", "items": { "type": "string" }, "default": [] },
+          "timeout_sec":        { "type": "integer", "minimum": 1, "maximum": 3600 },
+          "requires_elevated":  { "type": "boolean", "default": false },
+          "justification":      { "type": "string", "maxLength": 400 }
+        }
+      }
+    },
+    "estimated_total_seconds": { "type": "integer", "minimum": 0 }
+  }
+}

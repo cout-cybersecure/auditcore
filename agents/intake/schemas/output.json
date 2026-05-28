@@ -1,0 +1,44 @@
+{
+  "$id": "https://schemas.auditcore.dev/v1/agents/intake_output.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IntakeAgentOutput",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["environment_type", "required_collectors", "required_permissions", "asset_hints", "blocking_questions"],
+  "properties": {
+    "environment_type": {
+      "enum": ["on_prem", "aws", "gcp", "azure", "hybrid", "unknown"]
+    },
+    "required_collectors": {
+      "type": "array",
+      "items": {
+        "enum": ["linux_host", "windows_host", "aws_account", "gcp_account", "azure_account",
+                 "kubernetes_cluster", "postgres_database", "mysql_database",
+                 "prometheus_metrics", "hardware_deep"]
+      },
+      "uniqueItems": true
+    },
+    "required_permissions": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 200 }
+    },
+    "asset_hints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "identifier"],
+        "properties": {
+          "type":       { "enum": ["host", "k8s_cluster", "cloud_account", "database"] },
+          "identifier": { "type": "string", "maxLength": 200 },
+          "notes":      { "type": "string", "maxLength": 400 }
+        }
+      }
+    },
+    "blocking_questions": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 300 }
+    },
+    "estimated_duration_minutes": { "type": "integer", "minimum": 0 }
+  }
+}

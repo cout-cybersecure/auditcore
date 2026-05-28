@@ -1,0 +1,62 @@
+{
+  "$id": "https://schemas.auditcore.dev/v1/report_section.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "audience": {
+      "enum": [
+        "executive",
+        "engineer"
+      ],
+      "title": "Audience",
+      "type": "string"
+    },
+    "body_md": {
+      "title": "Body Md",
+      "type": "string"
+    },
+    "embedded_blueprints": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Embedded Blueprints",
+      "type": "array"
+    },
+    "embedded_findings": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Embedded Findings",
+      "type": "array"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "order": {
+      "title": "Order",
+      "type": "integer"
+    },
+    "run_id": {
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "run_id",
+    "audience",
+    "order",
+    "title",
+    "body_md"
+  ],
+  "title": "ReportSection",
+  "type": "object"
+}

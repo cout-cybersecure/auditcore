@@ -1,0 +1,120 @@
+{
+  "$defs": {
+    "Severity": {
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "$id": "https://schemas.auditcore.dev/v1/evidence_item.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "asset_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Asset Id"
+    },
+    "category": {
+      "enum": [
+        "security",
+        "performance",
+        "cloud",
+        "kubernetes",
+        "database",
+        "hardware",
+        "inventory"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "collected_at": {
+      "format": "date-time",
+      "title": "Collected At",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "parsed": {
+      "additionalProperties": true,
+      "title": "Parsed",
+      "type": "object"
+    },
+    "raw_ref": {
+      "title": "Raw Ref",
+      "type": "string"
+    },
+    "redactions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Redactions",
+      "type": "array"
+    },
+    "run_id": {
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "severity_hint": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Severity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "source_tool": {
+      "title": "Source Tool",
+      "type": "string"
+    },
+    "source_tool_version": {
+      "title": "Source Tool Version",
+      "type": "string"
+    },
+    "tenant_id": {
+      "format": "uuid",
+      "title": "Tenant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "tenant_id",
+    "run_id",
+    "source_tool",
+    "source_tool_version",
+    "collected_at",
+    "category",
+    "raw_ref",
+    "parsed",
+    "confidence"
+  ],
+  "title": "EvidenceItem",
+  "type": "object"
+}

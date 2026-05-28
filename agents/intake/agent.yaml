@@ -1,0 +1,23 @@
+name: intake
+version: 0.1.0
+purpose: |
+  Parse the raw client scope into a structured assessment plan: environment
+  type, asset hints, required collectors, permissions needed, and any
+  pre-conditions that block execution.
+
+task_kind: REASON
+budget_hint: low
+privacy: standard
+
+inputs:
+  - scope_text: string         # free-form scope from portal or API
+  - tenant_profile: object     # tenant defaults (data residency, allowed providers)
+
+output_schema: schemas/output.json
+system_prompt: prompts/system.md
+
+contract:
+  - Output MUST validate against the JSON Schema.
+  - Do NOT invent infrastructure that is not mentioned in scope_text.
+  - If scope is too vague to plan, set `blocking_questions` and produce
+    an empty `required_collectors`.

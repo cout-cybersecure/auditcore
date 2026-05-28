@@ -1,0 +1,27 @@
+name: security_analysis
+version: 0.1.0
+purpose: |
+  Interpret normalized security evidence. Identify exposed services,
+  weak configuration, risky IAM, patch gaps, TLS issues, K8s exposure,
+  and leaked secrets. Emit findings + recommendations referencing
+  evidence_items.
+
+task_kind: REASON
+budget_hint: normal
+privacy: standard
+
+inputs:
+  - run_id
+  - asset_ids: list[UUID]
+  - evidence_ids: list[UUID]   # pre-filtered to category=security
+
+output_schema: schemas/security_analysis_output.json
+
+contract:
+  - Every finding MUST list at least one evidence_id from inputs.
+  - Severity MUST be one of: info, low, medium, high, critical.
+  - description SHOULD explain impact and reference the asset.
+  - DO NOT invent CVEs; only cite CVEs present in input evidence.
+
+system_prompt: prompts/system.md
+user_prompt_template: prompts/user.j2

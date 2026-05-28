@@ -1,0 +1,28 @@
+name: normalization
+version: 0.1.0
+purpose: |
+  Convert ambiguous tool output into the canonical evidence shape when the
+  deterministic Rust parser can't. In Phase 1 most normalization is done by
+  the Rust normalizer-worker; this agent is invoked ONLY when a parser
+  returns confidence < 0.5 or marks output as ambiguous.
+
+task_kind: CLASSIFY
+budget_hint: low
+privacy: standard
+
+inputs:
+  - source_tool: string
+  - source_tool_version: string
+  - raw_excerpt: string         # capped to 8 KiB
+  - parsed_partial: object | null
+  - scope: object
+
+output_schema: schemas/output.json
+system_prompt: prompts/system.md
+
+contract:
+  - Output MUST validate against the JSON Schema.
+  - `parsed` keys MUST be drawn from the canonical key list for that tool,
+    documented per parser in services/normalizer-worker.
+  - If you cannot parse confidently, set confidence < 0.5 and explain in
+    `notes`.

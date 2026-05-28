@@ -1,0 +1,23 @@
+name: performance_analysis
+version: 0.1.0
+purpose: |
+  Interpret CPU / memory / disk / network / runtime / DB application
+  telemetry. Identify bottlenecks (CPU-bound, memory pressure, I/O wait,
+  saturation, error rate). Recommend optimization.
+
+task_kind: REASON
+budget_hint: normal
+privacy: standard
+
+inputs:
+  - run_id
+  - asset_ids: list[UUID]
+  - evidence_ids: list[UUID]   # filtered to category=performance
+
+output_schema: ../_shared/domain_agent_output.json
+system_prompt: prompts/system.md
+
+contract:
+  - Every finding MUST cite at least one evidence_id from inputs.
+  - Recommendations MUST reference a finding_temp_id from the same response.
+  - Do NOT propose changes that require deploys without flagging blast_radius.

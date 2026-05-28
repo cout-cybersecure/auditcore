@@ -1,0 +1,94 @@
+{
+  "$id": "https://schemas.auditcore.dev/v1/verification_test.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "baseline_result": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Baseline Result"
+    },
+    "delta_summary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Delta Summary"
+    },
+    "finding_id": {
+      "format": "uuid",
+      "title": "Finding Id",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "command",
+        "scan",
+        "metric_check",
+        "query"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "passed": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Passed"
+    },
+    "post_result": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Post Result"
+    },
+    "spec": {
+      "additionalProperties": true,
+      "title": "Spec",
+      "type": "object"
+    }
+  },
+  "required": [
+    "id",
+    "finding_id",
+    "name",
+    "kind",
+    "spec"
+  ],
+  "title": "VerificationTest",
+  "type": "object"
+}

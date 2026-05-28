@@ -1,0 +1,118 @@
+{
+  "$defs": {
+    "AssetType": {
+      "enum": [
+        "host",
+        "vm",
+        "container",
+        "pod",
+        "k8s_node",
+        "k8s_cluster",
+        "cloud_account",
+        "cloud_resource",
+        "database",
+        "gpu",
+        "network_device",
+        "load_balancer",
+        "storage_bucket"
+      ],
+      "title": "AssetType",
+      "type": "string"
+    }
+  },
+  "$id": "https://schemas.auditcore.dev/v1/asset.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "attributes": {
+      "additionalProperties": true,
+      "title": "Attributes",
+      "type": "object"
+    },
+    "environment": {
+      "default": "unknown",
+      "enum": [
+        "prod",
+        "staging",
+        "dev",
+        "unknown"
+      ],
+      "title": "Environment",
+      "type": "string"
+    },
+    "first_seen": {
+      "format": "date-time",
+      "title": "First Seen",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "importance": {
+      "default": 3,
+      "maximum": 5,
+      "minimum": 1,
+      "title": "Importance",
+      "type": "integer"
+    },
+    "last_seen": {
+      "format": "date-time",
+      "title": "Last Seen",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "natural_key": {
+      "title": "Natural Key",
+      "type": "string"
+    },
+    "parent_asset_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Asset Id"
+    },
+    "run_id": {
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "tags": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "object"
+    },
+    "tenant_id": {
+      "format": "uuid",
+      "title": "Tenant Id",
+      "type": "string"
+    },
+    "type": {
+      "$ref": "#/$defs/AssetType"
+    }
+  },
+  "required": [
+    "id",
+    "tenant_id",
+    "run_id",
+    "type",
+    "natural_key",
+    "name",
+    "first_seen",
+    "last_seen"
+  ],
+  "title": "Asset",
+  "type": "object"
+}

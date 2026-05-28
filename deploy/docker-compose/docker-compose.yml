@@ -1,0 +1,58 @@
+# AuditCore — local dev infrastructure (Phase 1).
+# Postgres for normalized data, MinIO for raw evidence.
+# Temporal lands in Phase 2; for now normalization runs in-process.
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: auditcore-postgres
+    environment:
+      POSTGRES_DB: auditcore
+      POSTGRES_USER: auditcore
+      POSTGRES_PASSWORD: dev-only-change-me
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auditcore -d auditcore"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    container_name: auditcore-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: auditcore
+      MINIO_ROOT_PASSWORD: dev-only-change-me
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: auditcore-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+      mc alias set local http://minio:9000 auditcore dev-only-change-me &&
+      mc mb -p local/auditcore-raw-evidence || true &&
+      mc mb -p local/auditcore-reports || true &&
+      echo 'MinIO buckets ready.'
+      "
+
+volumes:
+  postgres_data:
+  minio_data:

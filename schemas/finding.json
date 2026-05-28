@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "Domain": {
+      "enum": [
+        "security",
+        "performance",
+        "cloud",
+        "k8s",
+        "db",
+        "hardware"
+      ],
+      "title": "Domain",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "Severity",
+      "type": "string"
+    }
+  },
+  "$id": "https://schemas.auditcore.dev/v1/finding.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "asset_id": {
+      "format": "uuid",
+      "title": "Asset Id",
+      "type": "string"
+    },
+    "cis_controls": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Cis Controls",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "cve": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Cve",
+      "type": "array"
+    },
+    "cwe": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Cwe",
+      "type": "array"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "domain": {
+      "$ref": "#/$defs/Domain"
+    },
+    "evidence_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Evidence Ids",
+      "type": "array"
+    },
+    "id": {
+      "format": "uuid",
+      "title": "Id",
+      "type": "string"
+    },
+    "model_used": {
+      "title": "Model Used",
+      "type": "string"
+    },
+    "produced_by_agent": {
+      "title": "Produced By Agent",
+      "type": "string"
+    },
+    "run_id": {
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "severity": {
+      "$ref": "#/$defs/Severity"
+    },
+    "status": {
+      "default": "open",
+      "enum": [
+        "open",
+        "accepted_risk",
+        "fixed",
+        "false_positive",
+        "in_conflict"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "tenant_id": {
+      "format": "uuid",
+      "title": "Tenant Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "tenant_id",
+    "run_id",
+    "asset_id",
+    "domain",
+    "title",
+    "description",
+    "severity",
+    "evidence_ids",
+    "produced_by_agent",
+    "model_used",
+    "created_at"
+  ],
+  "title": "Finding",
+  "type": "object"
+}
