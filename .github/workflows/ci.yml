@@ -66,6 +66,38 @@ jobs:
       - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test
 
+  db-schema:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: auditcore
+          POSTGRES_USER: auditcore
+          POSTGRES_PASSWORD: ci-only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U auditcore -d auditcore"
+          --health-interval 3s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: apply init schema (fails on any DDL error)
+        env:
+          PGPASSWORD: ci-only
+        run: |
+          psql -h localhost -U auditcore -d auditcore -v ON_ERROR_STOP=1 \
+            -f deploy/docker-compose/postgres/init/01_schema.sql
+      - name: assert expected tables exist
+        env:
+          PGPASSWORD: ci-only
+        run: |
+          for t in tenants runs assets evidence_items observations report_sections audit_log; do
+            psql -h localhost -U auditcore -d auditcore -tAc \
+              "SELECT to_regclass('public.$t')" | grep -qx "$t" \
+              || { echo "::error::missing table $t"; exit 1; }
+          done
+          echo "all expected tables present"
+
   cpp:
     runs-on: ubuntu-latest
     steps:
