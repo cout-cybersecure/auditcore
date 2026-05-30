@@ -14,6 +14,7 @@ allowlist := [
     {"tool": "hwprobe", "path": "hwprobe", "args": [],            "category": "hardware"},
     {"tool": "ip",      "path": "ip",      "args": ["-j", "addr"], "category": "hardware"},
     {"tool": "ss",      "path": "ss",      "args": ["-tuln"],     "category": "security"},
+    {"tool": "findmnt", "path": "findmnt", "args": ["-J"],        "category": "hardware"},
 ]
 
 # Decision: { allowed: bool, reason?: string }

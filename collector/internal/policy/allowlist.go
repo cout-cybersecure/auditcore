@@ -31,6 +31,8 @@ var Phase1 = []AllowedCommand{
 	{Tool: "ip",      Path: "ip",      Args: []string{"-j", "addr"},  Category: "hardware"},
 	// Listening sockets (exposed services) — described by the security agent.
 	{Tool: "ss",      Path: "ss",      Args: []string{"-tuln"},       Category: "security"},
+	// Mounted filesystems (target, source, fstype, options) — hardware/storage.
+	{Tool: "findmnt", Path: "findmnt", Args: []string{"-J"},          Category: "hardware"},
 }
 
 // Lookup returns the allowlist entry for the named tool, or an error if

@@ -4,6 +4,7 @@
 //! JSON value plus optional asset attribution. Parsers MUST be
 //! deterministic and side-effect free.
 
+mod findmnt;
 mod hwprobe;
 mod ip_addr;
 mod lsblk;
@@ -50,6 +51,7 @@ impl Registry {
         map.insert("hwprobe", Arc::new(hwprobe::HwprobeParser));
         map.insert("ip",      Arc::new(ip_addr::IpAddrParser));
         map.insert("ss",      Arc::new(ss::SsParser));
+        map.insert("findmnt", Arc::new(findmnt::FindmntParser));
         Self { map }
     }
 
