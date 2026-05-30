@@ -19,11 +19,33 @@ make normalizer-run    # second terminal: Rust worker (LISTENs + polls)
 make e2e-smoke         # third terminal: build collector + hwprobe + upload
 ```
 
-The flow:
-1. Collector (Go) runs allowlisted tools including `hwprobe` (C++/hwloc).
+The pipeline — collect → normalize → discover → describe:
+1. Collector (Go) runs allowlisted read-only tools incl. `hwprobe` (C++/hwloc), `ip`, `ss`.
 2. Bundle uploads to `ingestion-api` (Python/FastAPI). Raw bytes land in MinIO; rows in Postgres.
 3. Trigger fires `NOTIFY auditcore_evidence_ready <run_id>`.
 4. `normalizer-worker` (Rust) wakes, fetches raw from MinIO, runs the per-tool parser, writes `parsed` JSONB and upserts assets.
+5. `orchestrator` (Python) runs the discovery agents over the run's evidence and writes **observations** — precise factual statements, each citing evidence. Needs the `model-gateway` running.
+6. `report-generator` (Python) renders the observations into a descriptive document.
+
+AuditCore describes what it finds; it never scores, ranks, or recommends.
+
+## Discover + describe
+
+```bash
+# model-gateway (set a provider key, e.g. AUDITCORE_GATEWAY_ANTHROPIC_API_KEY)
+make gateway-run                                   # serves on :8001
+
+# run the discovery agents over a normalized run, writing observations
+auditcore-discover run <run-id>
+
+# render the descriptive document (purely factual, no AI) from the DB
+auditcore-report render <run-id> --audience technical --out description.html
+auditcore-report render <run-id> --audience summary   --out summary.html
+```
+
+The orchestrator enforces the integrity guard: any observation that cites no
+evidence, cites evidence it was not given, or references a foreign asset is
+dropped with a recorded reason. Every persisted observation is sourced.
 
 Inspect the run:
 

@@ -58,6 +58,35 @@ api-test: ## run ingestion-api tests
 	)
 
 # ---------------------------------------------------------------------------
+# Model gateway + discovery orchestrator
+# ---------------------------------------------------------------------------
+
+GATEWAY_DIR := services/model-gateway
+ORCH_DIR := services/orchestrator
+
+.PHONY: gateway-run
+gateway-run: ## run the model-gateway on :8001
+	@cd $(GATEWAY_DIR) && ( \
+		command -v uv >/dev/null && uv run uvicorn auditcore_gateway.main:app --port 8001 \
+		|| uvicorn auditcore_gateway.main:app --port 8001 \
+	)
+
+.PHONY: orchestrator-test
+orchestrator-test: ## run discovery orchestrator tests
+	@cd $(ORCH_DIR) && pytest -q
+
+# ---------------------------------------------------------------------------
+# Python test sweep (all packages, isolated per-package)
+# ---------------------------------------------------------------------------
+
+.PHONY: py-test
+py-test: ## run every Python package's tests in isolation
+	@for d in packages/agents-py services/model-gateway services/orchestrator \
+	          services/report-generator services/ingestion-api; do \
+		echo "=== $$d ==="; ( cd $$d && pytest -q ) || exit 1; \
+	done
+
+# ---------------------------------------------------------------------------
 # Collector
 # ---------------------------------------------------------------------------
 
