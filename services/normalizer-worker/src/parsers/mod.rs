@@ -5,9 +5,11 @@
 //! deterministic and side-effect free.
 
 mod hwprobe;
+mod ip_addr;
 mod lsblk;
 mod lscpu;
 mod lspci;
+mod ss;
 mod uname;
 
 use anyhow::Result;
@@ -46,6 +48,8 @@ impl Registry {
         map.insert("lspci",   Arc::new(lspci::LspciParser));
         map.insert("uname",   Arc::new(uname::UnameParser));
         map.insert("hwprobe", Arc::new(hwprobe::HwprobeParser));
+        map.insert("ip",      Arc::new(ip_addr::IpAddrParser));
+        map.insert("ss",      Arc::new(ss::SsParser));
         Self { map }
     }
 

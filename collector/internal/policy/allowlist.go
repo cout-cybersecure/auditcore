@@ -27,6 +27,10 @@ var Phase1 = []AllowedCommand{
 	{Tool: "lspci",   Path: "lspci",   Args: []string{"-vmm"},        Category: "hardware"},
 	{Tool: "uname",   Path: "uname",   Args: []string{"-a"},          Category: "inventory"},
 	{Tool: "hwprobe", Path: "hwprobe", Args: []string{},              Category: "hardware"},
+	// Network interfaces (addresses, MAC, MTU) — described by the hardware agent.
+	{Tool: "ip",      Path: "ip",      Args: []string{"-j", "addr"},  Category: "hardware"},
+	// Listening sockets (exposed services) — described by the security agent.
+	{Tool: "ss",      Path: "ss",      Args: []string{"-tuln"},       Category: "security"},
 }
 
 // Lookup returns the allowlist entry for the named tool, or an error if

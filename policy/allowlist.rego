@@ -12,6 +12,8 @@ allowlist := [
     {"tool": "lspci",   "path": "lspci",   "args": ["-vmm"],      "category": "hardware"},
     {"tool": "uname",   "path": "uname",   "args": ["-a"],        "category": "inventory"},
     {"tool": "hwprobe", "path": "hwprobe", "args": [],            "category": "hardware"},
+    {"tool": "ip",      "path": "ip",      "args": ["-j", "addr"], "category": "hardware"},
+    {"tool": "ss",      "path": "ss",      "args": ["-tuln"],     "category": "security"},
 ]
 
 # Decision: { allowed: bool, reason?: string }
