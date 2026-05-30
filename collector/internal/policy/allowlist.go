@@ -22,17 +22,17 @@ type AllowedCommand struct {
 // and NVIDIA GPU inventory. It is searched on PATH and falls back to
 // ./bin/hwprobe via the runner when not installed system-wide.
 var Phase1 = []AllowedCommand{
-	{Tool: "lscpu",   Path: "lscpu",   Args: []string{},              Category: "hardware"},
-	{Tool: "lsblk",   Path: "lsblk",   Args: []string{"-J", "-O"},    Category: "hardware"},
-	{Tool: "lspci",   Path: "lspci",   Args: []string{"-vmm"},        Category: "hardware"},
-	{Tool: "uname",   Path: "uname",   Args: []string{"-a"},          Category: "inventory"},
-	{Tool: "hwprobe", Path: "hwprobe", Args: []string{},              Category: "hardware"},
+	{Tool: "lscpu", Path: "lscpu", Args: []string{}, Category: "hardware"},
+	{Tool: "lsblk", Path: "lsblk", Args: []string{"-J", "-O"}, Category: "hardware"},
+	{Tool: "lspci", Path: "lspci", Args: []string{"-vmm"}, Category: "hardware"},
+	{Tool: "uname", Path: "uname", Args: []string{"-a"}, Category: "inventory"},
+	{Tool: "hwprobe", Path: "hwprobe", Args: []string{}, Category: "hardware"},
 	// Network interfaces (addresses, MAC, MTU) — described by the hardware agent.
-	{Tool: "ip",      Path: "ip",      Args: []string{"-j", "addr"},  Category: "hardware"},
+	{Tool: "ip", Path: "ip", Args: []string{"-j", "addr"}, Category: "hardware"},
 	// Listening sockets (exposed services) — described by the security agent.
-	{Tool: "ss",      Path: "ss",      Args: []string{"-tuln"},       Category: "security"},
+	{Tool: "ss", Path: "ss", Args: []string{"-tuln"}, Category: "security"},
 	// Mounted filesystems (target, source, fstype, options) — hardware/storage.
-	{Tool: "findmnt", Path: "findmnt", Args: []string{"-J"},          Category: "hardware"},
+	{Tool: "findmnt", Path: "findmnt", Args: []string{"-J"}, Category: "hardware"},
 }
 
 // Lookup returns the allowlist entry for the named tool, or an error if
