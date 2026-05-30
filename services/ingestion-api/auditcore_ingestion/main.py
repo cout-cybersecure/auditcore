@@ -168,6 +168,16 @@ def get_run(run_id: UUID) -> JSONResponse:
             (str(run_id),),
         )
         normalized_count = cur.fetchone()[0]
+        cur.execute(
+            "SELECT COUNT(*) FROM observations WHERE run_id = %s",
+            (str(run_id),),
+        )
+        observation_count = cur.fetchone()[0]
+        cur.execute(
+            "SELECT COUNT(*) FROM report_sections WHERE run_id = %s",
+            (str(run_id),),
+        )
+        section_count = cur.fetchone()[0]
 
     return JSONResponse({
         "id": str(row[0]),
@@ -178,6 +188,8 @@ def get_run(run_id: UUID) -> JSONResponse:
         "cost_cents": row[5],
         "evidence_count": evidence_count,
         "normalized_count": normalized_count,
+        "observation_count": observation_count,
+        "section_count": section_count,
     })
 
 
@@ -234,6 +246,69 @@ def list_assets(run_id: UUID) -> JSONResponse:
             for r in cur.fetchall()
         ]
     return JSONResponse({"run_id": str(run_id), "assets": assets})
+
+
+@app.get("/v1/runs/{run_id}/observations")
+def list_observations(run_id: UUID) -> JSONResponse:
+    """The discovered facts for a run — purely descriptive, evidence-cited."""
+    with conn() as c, c.cursor() as cur:
+        cur.execute(
+            """
+            SELECT id, asset_id, domain, topic, summary, detail, facts,
+                   related_asset_ids, evidence_ids, produced_by_agent, created_at
+              FROM observations
+             WHERE run_id = %s
+             ORDER BY domain, topic
+            """,
+            (str(run_id),),
+        )
+        observations = [
+            {
+                "id": str(r[0]),
+                "asset_id": str(r[1]),
+                "domain": r[2],
+                "topic": r[3],
+                "summary": r[4],
+                "detail": r[5],
+                "facts": r[6],
+                "related_asset_ids": [str(a) for a in (r[7] or [])],
+                "evidence_ids": [str(e) for e in (r[8] or [])],
+                "produced_by_agent": r[9],
+                "created_at": r[10].isoformat(),
+            }
+            for r in cur.fetchall()
+        ]
+    return JSONResponse({"run_id": str(run_id), "observations": observations})
+
+
+@app.get("/v1/runs/{run_id}/report-sections")
+def list_report_sections(run_id: UUID) -> JSONResponse:
+    """The agent-narrated description sections for a run."""
+    with conn() as c, c.cursor() as cur:
+        cur.execute(
+            """
+            SELECT id, audience, "order", title, body_md,
+                   embedded_observations, produced_by_agent, created_at
+              FROM report_sections
+             WHERE run_id = %s
+             ORDER BY audience, "order"
+            """,
+            (str(run_id),),
+        )
+        sections = [
+            {
+                "id": str(r[0]),
+                "audience": r[1],
+                "order": r[2],
+                "title": r[3],
+                "body_md": r[4],
+                "embedded_observations": [str(o) for o in (r[5] or [])],
+                "produced_by_agent": r[6],
+                "created_at": r[7].isoformat(),
+            }
+            for r in cur.fetchall()
+        ]
+    return JSONResponse({"run_id": str(run_id), "sections": sections})
 
 
 # ---------------------------------------------------------------------------
