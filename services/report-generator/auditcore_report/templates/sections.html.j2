@@ -1,0 +1,19 @@
+{% extends "_base.html.j2" %}
+{% block title %}AuditCore {{ audience|capitalize }} Description — run {{ data.run.id }}{% endblock %}
+{% block body %}
+<h1>AuditCore {{ audience|capitalize }} Description</h1>
+<p class="meta">Run <code>{{ data.run.id }}</code> · narrated by the report agent
+   · {{ sections|length }} sections</p>
+<p>This is the agent-narrated description. Every <em>italicized</em> phrase is an
+   inline reference to a discovered observation; the facts trace to collected
+   evidence.</p>
+
+{% if sections %}
+{% for s in sections %}
+<h2>{{ s.title }}</h2>
+<div>{{ s.body_md | md | safe }}</div>
+{% endfor %}
+{% else %}
+<p class="meta">No {{ audience }} sections recorded — the report agent has not run for this run.</p>
+{% endif %}
+{% endblock %}

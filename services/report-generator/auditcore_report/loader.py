@@ -1,4 +1,4 @@
-"""Load a run's data from Postgres into a ReportData dataclass."""
+"""Load a run's data from Postgres into render dataclasses."""
 from __future__ import annotations
 
 from uuid import UUID
@@ -6,6 +6,40 @@ from uuid import UUID
 import psycopg
 
 from .render import ReportData
+from .sections import SectionsData
+
+
+def load_sections(dsn: str, run_id: UUID) -> SectionsData:
+    """Load agent-narrated report_sections + an observation-id→topic lookup."""
+    with psycopg.connect(dsn) as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT id, status, started_at FROM runs WHERE id = %s",
+            (str(run_id),),
+        )
+        row = cur.fetchone()
+        if row is None:
+            raise LookupError(f"run not found: {run_id}")
+        run = {"id": str(row[0]), "status": row[1],
+               "started_at": row[2].isoformat() if row[2] else None}
+
+        cur.execute(
+            'SELECT audience, "order", title, body_md '
+            "FROM report_sections WHERE run_id = %s "
+            'ORDER BY audience, "order"',
+            (str(run_id),),
+        )
+        sections = [
+            {"audience": r[0], "order": r[1], "title": r[2], "body_md": r[3]}
+            for r in cur.fetchall()
+        ]
+
+        cur.execute(
+            "SELECT id, topic FROM observations WHERE run_id = %s",
+            (str(run_id),),
+        )
+        topics = {str(r[0]): r[1] for r in cur.fetchall()}
+
+    return SectionsData(run=run, sections=sections, observation_topics=topics)
 
 
 def load_run(dsn: str, run_id: UUID) -> ReportData:
