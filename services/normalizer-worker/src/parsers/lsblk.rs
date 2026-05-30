@@ -26,7 +26,9 @@ impl Parser for LsblkParser {
                     if let Some(sz) = d.get("size").and_then(|v| v.as_u64()) {
                         total_bytes += sz as u128;
                     } else if let Some(sz_str) = d.get("size").and_then(|v| v.as_str()) {
-                        if let Ok(n) = sz_str.parse::<u128>() { total_bytes += n; }
+                        if let Ok(n) = sz_str.parse::<u128>() {
+                            total_bytes += n;
+                        }
                     }
                     if d.get("rota").and_then(|v| v.as_u64()) == Some(1) {
                         rotational_disks += 1;
@@ -36,11 +38,14 @@ impl Parser for LsblkParser {
         }
 
         if let Value::Object(ref mut m) = doc {
-            m.insert("summary".into(), json!({
-                "disks": total_disks,
-                "rotational_disks": rotational_disks,
-                "total_bytes": total_bytes.to_string(),
-            }));
+            m.insert(
+                "summary".into(),
+                json!({
+                    "disks": total_disks,
+                    "rotational_disks": rotational_disks,
+                    "total_bytes": total_bytes.to_string(),
+                }),
+            );
         }
 
         let (hostname, host_id) = host_from_scope(scope);
@@ -74,7 +79,9 @@ mod tests {
             {"name":"nvme0n1","type":"disk","size":512000000000,"rota":0},
             {"name":"sda","type":"disk","size":"1000000000000","rota":1}
         ]}"#;
-        let r = LsblkParser.parse(raw, "2.39.3", &json!({"hostname":"h"})).unwrap();
+        let r = LsblkParser
+            .parse(raw, "2.39.3", &json!({"hostname":"h"}))
+            .unwrap();
         assert_eq!(r.parsed["summary"]["disks"], 2);
         assert_eq!(r.parsed["summary"]["rotational_disks"], 1);
         assert!(r.confidence > 0.8);

@@ -44,13 +44,13 @@ pub struct Registry {
 impl Registry {
     pub fn new() -> Self {
         let mut map: HashMap<&'static str, Arc<dyn Parser>> = HashMap::new();
-        map.insert("lscpu",   Arc::new(lscpu::LscpuParser));
-        map.insert("lsblk",   Arc::new(lsblk::LsblkParser));
-        map.insert("lspci",   Arc::new(lspci::LspciParser));
-        map.insert("uname",   Arc::new(uname::UnameParser));
+        map.insert("lscpu", Arc::new(lscpu::LscpuParser));
+        map.insert("lsblk", Arc::new(lsblk::LsblkParser));
+        map.insert("lspci", Arc::new(lspci::LspciParser));
+        map.insert("uname", Arc::new(uname::UnameParser));
         map.insert("hwprobe", Arc::new(hwprobe::HwprobeParser));
-        map.insert("ip",      Arc::new(ip_addr::IpAddrParser));
-        map.insert("ss",      Arc::new(ss::SsParser));
+        map.insert("ip", Arc::new(ip_addr::IpAddrParser));
+        map.insert("ss", Arc::new(ss::SsParser));
         map.insert("findmnt", Arc::new(findmnt::FindmntParser));
         Self { map }
     }

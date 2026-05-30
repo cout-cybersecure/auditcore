@@ -4,7 +4,11 @@ use serde_json::{json, Value};
 use super::{host_from_scope, AssetHint, ParseResult, Parser};
 
 const INT_FIELDS: &[&str] = &[
-    "CPU(s)", "Socket(s)", "Core(s) per socket", "Thread(s) per core", "NUMA node(s)",
+    "CPU(s)",
+    "Socket(s)",
+    "Core(s) per socket",
+    "Thread(s) per core",
+    "NUMA node(s)",
 ];
 
 pub struct LscpuParser;
@@ -16,7 +20,9 @@ impl Parser for LscpuParser {
         parsed.insert("tool_version".into(), Value::String(version.to_string()));
 
         for line in text.lines() {
-            let Some((k, v)) = line.split_once(':') else { continue };
+            let Some((k, v)) = line.split_once(':') else {
+                continue;
+            };
             let k = k.trim();
             let v = v.trim();
             if INT_FIELDS.contains(&k) {
@@ -45,7 +51,11 @@ impl Parser for LscpuParser {
             }),
         };
 
-        let confidence = if parsed.contains_key("Model name") { 0.95 } else { 0.6 };
+        let confidence = if parsed.contains_key("Model name") {
+            0.95
+        } else {
+            0.6
+        };
 
         Ok(ParseResult {
             parsed: Value::Object(parsed),
@@ -74,8 +84,11 @@ NUMA node(s):                         1
     #[test]
     fn parses_topology() {
         let r = LscpuParser
-            .parse(SAMPLE.as_bytes(), "util-linux 2.39.3",
-                   &json!({"hostname": "host-a"}))
+            .parse(
+                SAMPLE.as_bytes(),
+                "util-linux 2.39.3",
+                &json!({"hostname": "host-a"}),
+            )
             .unwrap();
         assert_eq!(r.parsed["CPU(s)"], 16);
         assert_eq!(r.parsed["Socket(s)"], 1);

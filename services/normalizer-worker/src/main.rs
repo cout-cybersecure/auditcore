@@ -9,6 +9,7 @@ mod config;
 mod db;
 mod normalize;
 mod parsers;
+mod redact;
 mod storage;
 mod worker;
 
@@ -19,23 +20,36 @@ use tracing_subscriber::EnvFilter;
 #[derive(Parser, Debug)]
 #[command(name = "auditcore-normalizer", version)]
 struct Args {
-    #[arg(long, env = "AUDITCORE_DB_DSN",
-          default_value = "postgresql://auditcore:dev-only-change-me@localhost:5432/auditcore")]
+    #[arg(
+        long,
+        env = "AUDITCORE_DB_DSN",
+        default_value = "postgresql://auditcore:dev-only-change-me@localhost:5432/auditcore"
+    )]
     db_dsn: String,
 
-    #[arg(long, env = "AUDITCORE_S3_ENDPOINT",
-          default_value = "http://localhost:9000")]
+    #[arg(
+        long,
+        env = "AUDITCORE_S3_ENDPOINT",
+        default_value = "http://localhost:9000"
+    )]
     s3_endpoint: String,
 
     #[arg(long, env = "AUDITCORE_S3_ACCESS_KEY", default_value = "auditcore")]
     s3_access_key: String,
 
-    #[arg(long, env = "AUDITCORE_S3_SECRET_KEY", default_value = "dev-only-change-me")]
+    #[arg(
+        long,
+        env = "AUDITCORE_S3_SECRET_KEY",
+        default_value = "dev-only-change-me"
+    )]
     s3_secret_key: String,
 
     /// Default tenant id for single-tenant Phase 1 deployments.
-    #[arg(long, env = "AUDITCORE_DEFAULT_TENANT_ID",
-          default_value = "00000000-0000-0000-0000-000000000001")]
+    #[arg(
+        long,
+        env = "AUDITCORE_DEFAULT_TENANT_ID",
+        default_value = "00000000-0000-0000-0000-000000000001"
+    )]
     default_tenant_id: String,
 
     /// Poll interval seconds; falls back when no NOTIFY arrives.
@@ -52,8 +66,10 @@ async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
     tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::try_from_default_env()
-            .unwrap_or_else(|_| EnvFilter::new("auditcore_normalizer=info,sqlx=warn")))
+        .with_env_filter(
+            EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| EnvFilter::new("auditcore_normalizer=info,sqlx=warn")),
+        )
         .init();
 
     info!(

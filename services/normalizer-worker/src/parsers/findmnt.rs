@@ -21,10 +21,26 @@ impl Parser for FindmntParser {
         }
 
         // Distinct real fstypes (exclude pseudo filesystems for a compact view).
-        let pseudo = ["sysfs", "proc", "cgroup", "cgroup2", "tmpfs", "devtmpfs",
-                      "devpts", "mqueue", "debugfs", "tracefs", "securityfs",
-                      "pstore", "bpf", "configfs", "fusectl", "hugetlbfs",
-                      "autofs", "binfmt_misc"];
+        let pseudo = [
+            "sysfs",
+            "proc",
+            "cgroup",
+            "cgroup2",
+            "tmpfs",
+            "devtmpfs",
+            "devpts",
+            "mqueue",
+            "debugfs",
+            "tracefs",
+            "securityfs",
+            "pstore",
+            "bpf",
+            "configfs",
+            "fusectl",
+            "hugetlbfs",
+            "autofs",
+            "binfmt_misc",
+        ];
         let mut real_fstypes: Vec<String> = mounts
             .iter()
             .filter_map(|m| m.get("fstype").and_then(|v| v.as_str()))

@@ -28,7 +28,17 @@ pub async fn normalize_one(
     let raw = storage::fetch_object(s3, &ev.raw_ref).await?;
     let scope = db::fetch_run_scope(pool, ev.run_id).await?;
 
-    let result = parser.parse(&raw, &ev.source_tool_version, &scope)?;
+    let mut result = parser.parse(&raw, &ev.source_tool_version, &scope)?;
+
+    // Redact secrets from the parsed evidence before it is persisted or ever
+    // reaches a model. This is the normalizer-side stage of two-stage redaction.
+    let redactions = crate::redact::redact_value(&mut result.parsed);
+    if !redactions.is_empty() {
+        tracing::warn!(
+            evidence_id = %ev.id, tool = %ev.source_tool,
+            rules = ?redactions, "redacted secrets from parsed evidence"
+        );
+    }
 
     let asset_id = if let Some(hint) = result.asset_hint.as_ref() {
         Some(db::upsert_asset(pool, cfg.default_tenant_id, ev.run_id, hint).await?)
@@ -42,6 +52,7 @@ pub async fn normalize_one(
         asset_id,
         &result.parsed,
         result.confidence,
+        &redactions,
     )
     .await?;
 

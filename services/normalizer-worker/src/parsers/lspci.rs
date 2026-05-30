@@ -21,8 +21,7 @@ impl Parser for LspciParser {
                 continue;
             }
             if let Some((k, v)) = line.split_once(':') {
-                current.insert(k.trim().to_string(),
-                               Value::String(v.trim().to_string()));
+                current.insert(k.trim().to_string(), Value::String(v.trim().to_string()));
             }
         }
         if !current.is_empty() {
@@ -92,7 +91,9 @@ Slot:   00:02.0
 Class:  VGA compatible controller
 Vendor: Intel Corporation
 ";
-        let r = LspciParser.parse(raw, "3.10", &json!({"hostname":"h"})).unwrap();
+        let r = LspciParser
+            .parse(raw, "3.10", &json!({"hostname":"h"}))
+            .unwrap();
         assert_eq!(r.parsed["summary"]["device_count"], 2);
         assert_eq!(r.parsed["summary"]["gpus"], 1);
     }

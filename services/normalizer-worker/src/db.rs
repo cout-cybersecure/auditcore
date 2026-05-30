@@ -104,19 +104,22 @@ pub async fn write_parsed(
     asset_id: Option<Uuid>,
     parsed: &Value,
     confidence: f32,
+    redactions: &[String],
 ) -> Result<()> {
     sqlx::query(
         r#"
         UPDATE evidence_items
            SET parsed = $1,
                asset_id = COALESCE($2, asset_id),
-               confidence = $3
-         WHERE id = $4
+               confidence = $3,
+               redactions = $4
+         WHERE id = $5
         "#,
     )
     .bind(parsed)
     .bind(asset_id)
     .bind(confidence)
+    .bind(redactions)
     .bind(evidence_id)
     .execute(pool)
     .await?;

@@ -10,14 +10,16 @@ pub fn make_client(cfg: &Config) -> Client {
     let creds = Credentials::new(
         &cfg.s3_access_key,
         &cfg.s3_secret_key,
-        None, None, "auditcore-static",
+        None,
+        None,
+        "auditcore-static",
     );
     let s3_cfg = Builder::new()
         .behavior_version(BehaviorVersion::latest())
         .endpoint_url(&cfg.s3_endpoint)
-        .region(Region::new("us-east-1"))     // MinIO ignores this; required by SDK
+        .region(Region::new("us-east-1")) // MinIO ignores this; required by SDK
         .credentials_provider(creds)
-        .force_path_style(true)               // required for MinIO
+        .force_path_style(true) // required for MinIO
         .build();
     Client::from_conf(s3_cfg)
 }

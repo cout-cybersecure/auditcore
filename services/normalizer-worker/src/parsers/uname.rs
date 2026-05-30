@@ -48,8 +48,11 @@ mod tests {
 
     #[test]
     fn parses_uname_a() {
-        let raw = b"Linux box 6.17.0-29-generic #29-Ubuntu SMP PREEMPT_DYNAMIC ... x86_64 GNU/Linux\n";
-        let r = UnameParser.parse(raw, "x", &json!({"hostname":"box"})).unwrap();
+        let raw =
+            b"Linux box 6.17.0-29-generic #29-Ubuntu SMP PREEMPT_DYNAMIC ... x86_64 GNU/Linux\n";
+        let r = UnameParser
+            .parse(raw, "x", &json!({"hostname":"box"}))
+            .unwrap();
         assert_eq!(r.parsed["kernel_name"], "Linux");
         assert_eq!(r.parsed["kernel_release"], "6.17.0-29-generic");
         assert!(r.confidence > 0.9);

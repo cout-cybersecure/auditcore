@@ -29,7 +29,11 @@ impl Parser for HwprobeParser {
             "bios_vendor":    doc.get("bios_vendor"),
         });
 
-        let confidence = if doc.get("numa_nodes").is_some() { 0.97 } else { 0.6 };
+        let confidence = if doc.get("numa_nodes").is_some() {
+            0.97
+        } else {
+            0.6
+        };
 
         Ok(ParseResult {
             parsed: doc,
@@ -52,7 +56,9 @@ mod tests {
     #[test]
     fn extracts_topology_attributes() {
         let raw = br#"{"numa_nodes":2,"packages":1,"cores":8,"pus":16,"l3_cache_bytes":16777216}"#;
-        let r = HwprobeParser.parse(raw, "0.1.0", &json!({"hostname":"h"})).unwrap();
+        let r = HwprobeParser
+            .parse(raw, "0.1.0", &json!({"hostname":"h"}))
+            .unwrap();
         let attrs = &r.asset_hint.unwrap().attributes;
         assert_eq!(attrs["numa_nodes"], 2);
         assert_eq!(attrs["core_count"], 8);

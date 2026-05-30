@@ -2,8 +2,8 @@
 name = "auditcore-normalizer"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.75"
-description = "AuditCore normalizer worker — parses raw evidence into structured findings"
+rust-version = "1.80"  # std::sync::LazyLock (redaction patterns)
+description = "AuditCore normalizer worker — parses raw evidence into structured evidence"
 
 [[bin]]
 name = "auditcore-normalizer"
@@ -27,6 +27,7 @@ uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4", features = ["derive", "env"] }
 futures = "0.3"
+regex = "1"
 
 [dev-dependencies]
 pretty_assertions = "1"
