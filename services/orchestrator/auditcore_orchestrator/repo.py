@@ -40,11 +40,36 @@ class ObservationWrite:
     model_used: str
 
 
+@dataclass(frozen=True)
+class ObservationRow:
+    id: UUID
+    asset_id: UUID
+    domain: str
+    topic: str
+    summary: str
+    detail: str
+    facts: dict[str, Any]
+
+
+@dataclass
+class ReportSectionWrite:
+    run_id: UUID
+    audience: str
+    order: int
+    title: str
+    body_md: str
+    embedded_observations: list[UUID]
+    produced_by_agent: str
+    model_used: str
+
+
 class Repo(Protocol):
     def evidence_for_category(self, run_id: UUID, category: str) -> list[EvidenceRow]: ...
     def assets_for_run(self, run_id: UUID) -> list[AssetRow]: ...
     def categories_present(self, run_id: UUID) -> list[str]: ...
     def write_observations(self, obs: list[ObservationWrite]) -> int: ...
+    def observations_for_run(self, run_id: UUID) -> list[ObservationRow]: ...
+    def write_report_sections(self, sections: list[ReportSectionWrite]) -> int: ...
     def set_run_status(self, run_id: UUID, status: str) -> None: ...
     def audit(self, run_id: UUID, action: str, metadata: dict[str, Any]) -> None: ...
 
@@ -120,6 +145,41 @@ class PgRepo:
                 )
             c.commit()
         return len(obs)
+
+    def observations_for_run(self, run_id: UUID) -> list[ObservationRow]:
+        with self._conn() as c, c.cursor() as cur:
+            cur.execute(
+                "SELECT id, asset_id, domain, topic, summary, detail, facts "
+                "FROM observations WHERE run_id = %s ORDER BY domain, topic",
+                (str(run_id),),
+            )
+            return [
+                ObservationRow(r[0], r[1], r[2], r[3], r[4], r[5], r[6] or {})
+                for r in cur.fetchall()
+            ]
+
+    def write_report_sections(self, sections: list[ReportSectionWrite]) -> int:
+        from psycopg.types.json import Jsonb  # noqa: F401 (kept for symmetry)
+        if not sections:
+            return 0
+        with self._conn() as c, c.cursor() as cur:
+            for s in sections:
+                cur.execute(
+                    """
+                    INSERT INTO report_sections
+                        (tenant_id, run_id, audience, "order", title, body_md,
+                         embedded_observations, produced_by_agent, model_used)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    (
+                        str(self._tenant_id), str(s.run_id), s.audience, s.order,
+                        s.title, s.body_md,
+                        [str(o) for o in s.embedded_observations],
+                        s.produced_by_agent, s.model_used,
+                    ),
+                )
+            c.commit()
+        return len(sections)
 
     def set_run_status(self, run_id: UUID, status: str) -> None:
         with self._conn() as c, c.cursor() as cur:

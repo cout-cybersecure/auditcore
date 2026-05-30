@@ -151,6 +151,33 @@ CREATE INDEX observations_asset_idx      ON observations (asset_id);
 CREATE INDEX observations_topic_idx      ON observations (run_id, topic);
 
 -- ---------------------------------------------------------------------------
+-- Report sections
+--
+-- The report agent assembles observations into a descriptive document. Each
+-- section's body references the observations it draws from via
+-- [[observation:UUID]] markers; embedded_observations lists those ids. The
+-- orchestrator validates every referenced id against the run's observations
+-- before persisting — a section may only cite facts that exist.
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE report_sections (
+    id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id             UUID NOT NULL REFERENCES tenants(id),
+    run_id                UUID NOT NULL REFERENCES runs(id),
+    audience              TEXT NOT NULL,        -- 'technical' | 'summary'
+    "order"               INT NOT NULL,
+    title                 TEXT NOT NULL,
+    body_md               TEXT NOT NULL,
+    embedded_observations UUID[] NOT NULL DEFAULT '{}',
+    produced_by_agent     TEXT NOT NULL,
+    model_used            TEXT NOT NULL,
+    created_at            TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX report_sections_run_idx
+    ON report_sections (run_id, audience, "order");
+
+-- ---------------------------------------------------------------------------
 -- Audit log
 -- ---------------------------------------------------------------------------
 

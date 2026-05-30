@@ -5,7 +5,13 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from auditcore_orchestrator.gateway_client import GatewayResult
-from auditcore_orchestrator.repo import AssetRow, EvidenceRow, ObservationWrite
+from auditcore_orchestrator.repo import (
+    AssetRow,
+    EvidenceRow,
+    ObservationRow,
+    ObservationWrite,
+    ReportSectionWrite,
+)
 
 
 class FakeGateway:
@@ -35,7 +41,9 @@ class FakeGateway:
 class FakeRepo:
     evidence: dict[str, list[EvidenceRow]] = field(default_factory=dict)
     assets: list[AssetRow] = field(default_factory=list)
+    observations: list[ObservationRow] = field(default_factory=list)
     written: list[ObservationWrite] = field(default_factory=list)
+    sections: list[ReportSectionWrite] = field(default_factory=list)
     statuses: list[str] = field(default_factory=list)
     audits: list[tuple[str, dict]] = field(default_factory=list)
 
@@ -52,6 +60,13 @@ class FakeRepo:
         self.written.extend(obs)
         return len(obs)
 
+    def observations_for_run(self, run_id: UUID) -> list[ObservationRow]:
+        return self.observations
+
+    def write_report_sections(self, sections: list[ReportSectionWrite]) -> int:
+        self.sections.extend(sections)
+        return len(sections)
+
     def set_run_status(self, run_id: UUID, status: str) -> None:
         self.statuses.append(status)
 
@@ -65,3 +80,11 @@ def make_asset() -> AssetRow:
 
 def make_evidence(asset_id: UUID, category: str = "hardware") -> EvidenceRow:
     return EvidenceRow(uuid4(), asset_id, "lscpu", category, {"CPU(s)": 16})
+
+
+def make_observation(asset_id: UUID, domain: str = "hardware") -> ObservationRow:
+    return ObservationRow(
+        uuid4(), asset_id, domain, "CPU topology",
+        "16 logical CPUs", "Single socket, 8 cores, 2 threads/core.",
+        {"cpus": 16},
+    )
