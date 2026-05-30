@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import pytest
 from auditcore_agents import AgentRegistry
-from auditcore_orchestrator.report import assemble_report, build_report_input
+from auditcore_orchestrator.report import build_report_input
 from auditcore_orchestrator.runner import assemble_run_report
 
 from .conftest import FakeGateway, FakeRepo, make_asset, make_observation

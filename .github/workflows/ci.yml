@@ -35,6 +35,10 @@ jobs:
             fi
           done
           pip install -e "${{ matrix.package }}[dev]" || pip install -e "${{ matrix.package }}"
+      - name: ruff
+        run: |
+          pip install ruff
+          ruff check "${{ matrix.package }}"
       - name: pytest
         run: |
           if [ -d "${{ matrix.package }}/tests" ]; then
