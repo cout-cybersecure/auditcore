@@ -18,6 +18,5 @@ system_prompt: prompts/system.md
 
 contract:
   - Every step's `tool` MUST appear in the input `allowlist`.
-  - Any step that needs elevated privilege MUST set `requires_elevated: true`
-    AND populate `justification`.
+  - "Any step that needs elevated privilege MUST set requires_elevated true AND populate justification."
   - Output MUST validate against the JSON Schema.

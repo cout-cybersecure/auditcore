@@ -22,7 +22,5 @@ system_prompt: prompts/system.md
 
 contract:
   - Output MUST validate against the JSON Schema.
-  - `parsed` keys MUST be drawn from the canonical key list for that tool,
-    documented per parser in services/normalizer-worker.
-  - If you cannot parse confidently, set confidence < 0.5 and explain in
-    `notes`.
+  - "`parsed` keys MUST be drawn from the canonical key list for that tool, documented per parser in services/normalizer-worker."
+  - "If you cannot parse confidently, set confidence < 0.5 and explain in `notes`."

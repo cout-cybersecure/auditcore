@@ -71,7 +71,6 @@ impl Parser for LspciParser {
         Ok(ParseResult {
             parsed,
             confidence: if devices.is_empty() { 0.4 } else { 0.9 },
-            severity_hint: None,
             asset_hint: Some(asset_hint),
             redactions: vec![],
         })

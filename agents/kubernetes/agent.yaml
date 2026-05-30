@@ -1,9 +1,12 @@
 name: kubernetes
-version: 0.1.0
+version: 0.2.0
 purpose: |
-  Interpret Kubernetes evidence: RBAC, PodSecurity, NetworkPolicies, image
-  risks, resource limits, exposed services, autoscaling, runtime risks.
-  Produce hardening + optimization findings.
+  Strategically and exhaustively discover how a Kubernetes cluster's
+  functionality is configured: RBAC bindings, PodSecurity settings, network
+  policies, workloads and their images, resource requests/limits, exposed
+  services, autoscaling configuration, and how workloads interconnect.
+  Output precise factual observations of the cluster architecture. Does NOT
+  rate, score, or recommend.
 
 task_kind: REASON
 budget_hint: normal
@@ -14,5 +17,10 @@ inputs:
   - asset_ids: list[UUID]
   - evidence_ids: list[UUID]   # filtered to category=kubernetes
 
-output_schema: ../_shared/domain_agent_output.json
+output_schema: ../_shared/discovery_agent_output.json
 system_prompt: prompts/system.md
+
+contract:
+  - Every observation MUST cite at least one evidence_id from inputs.
+  - Observations are factual descriptions, never judgments or recommendations.
+  - Record exact names/namespaces/image tags only when present in evidence.

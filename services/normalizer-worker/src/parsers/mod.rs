@@ -18,7 +18,6 @@ use std::sync::Arc;
 pub struct ParseResult {
     pub parsed: Value,
     pub confidence: f32,
-    pub severity_hint: Option<String>,
     pub asset_hint: Option<AssetHint>,
     #[allow(dead_code)] // populated by future redaction-aware parsers
     pub redactions: Vec<String>,

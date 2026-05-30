@@ -36,7 +36,6 @@ impl Parser for UnameParser {
         Ok(ParseResult {
             parsed,
             confidence: if toks.len() >= 5 { 0.95 } else { 0.5 },
-            severity_hint: None,
             asset_hint: Some(asset_hint),
             redactions: vec![],
         })

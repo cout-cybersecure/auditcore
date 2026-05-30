@@ -98,29 +98,25 @@ pub async fn upsert_asset(
     Ok(row.0)
 }
 
-#[allow(clippy::too_many_arguments)]
 pub async fn write_parsed(
     pool: &PgPool,
     evidence_id: Uuid,
     asset_id: Option<Uuid>,
     parsed: &Value,
     confidence: f32,
-    severity_hint: Option<&str>,
 ) -> Result<()> {
     sqlx::query(
         r#"
         UPDATE evidence_items
            SET parsed = $1,
                asset_id = COALESCE($2, asset_id),
-               confidence = $3,
-               severity_hint = $4::severity
-         WHERE id = $5
+               confidence = $3
+         WHERE id = $4
         "#,
     )
     .bind(parsed)
     .bind(asset_id)
     .bind(confidence)
-    .bind(severity_hint)
     .bind(evidence_id)
     .execute(pool)
     .await?;

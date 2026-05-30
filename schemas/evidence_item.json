@@ -1,17 +1,4 @@
 {
-  "$defs": {
-    "Severity": {
-      "enum": [
-        "info",
-        "low",
-        "medium",
-        "high",
-        "critical"
-      ],
-      "title": "Severity",
-      "type": "string"
-    }
-  },
   "$id": "https://schemas.auditcore.dev/v1/evidence_item.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
@@ -36,6 +23,8 @@
         "kubernetes",
         "database",
         "hardware",
+        "network",
+        "software",
         "inventory"
       ],
       "title": "Category",
@@ -77,17 +66,6 @@
       "format": "uuid",
       "title": "Run Id",
       "type": "string"
-    },
-    "severity_hint": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/Severity"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null
     },
     "source_tool": {
       "title": "Source Tool",

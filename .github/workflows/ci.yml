@@ -16,9 +16,9 @@ jobs:
       matrix:
         package:
           - packages/models-py
+          - packages/agents-py
           - services/ingestion-api
           - services/model-gateway
-          - services/scoring-engine
           - services/report-generator
     steps:
       - uses: actions/checkout@v4

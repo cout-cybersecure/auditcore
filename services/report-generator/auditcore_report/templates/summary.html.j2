@@ -1,0 +1,35 @@
+{% extends "_base.html.j2" %}
+{% block title %}AuditCore System Summary — run {{ data.run.id }}{% endblock %}
+{% block body %}
+<h1>AuditCore System Summary</h1>
+<p class="meta">Assessment run started {{ data.run.started_at }}
+   · {{ data.assets|length }} assets · {{ data.observations|length }} observations</p>
+<p>A condensed, factual description of the assessed system. The full technical
+   document contains every discovered detail.</p>
+
+<h2>What was examined</h2>
+<div class="count-bar">
+  {% for cat, n in evidence_by_category.items() %}
+  <div><strong>{{ n }}</strong><div>{{ cat }}</div></div>
+  {% endfor %}
+</div>
+
+<h2>Key functional characteristics</h2>
+{% if domains %}
+{% for domain, observations in domains %}
+<h3><span class="domain-tag">{{ domain_labels.get(domain, domain) }}</span></h3>
+<ul>
+  {% for o in observations %}
+  <li><strong>{{ o.topic }}</strong>: {{ o.summary }}</li>
+  {% endfor %}
+</ul>
+{% endfor %}
+{% else %}
+<p class="meta">No observations recorded yet.</p>
+{% endif %}
+
+<h2>Coverage</h2>
+<p>{{ data.assets|length }} assets, {{ data.evidence|length }} evidence items across
+   {{ evidence_by_category|length }} categories. See the technical document for the
+   exhaustive per-component description.</p>
+{% endblock %}

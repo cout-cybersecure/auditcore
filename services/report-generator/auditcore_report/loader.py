@@ -38,7 +38,7 @@ def load_run(dsn: str, run_id: UUID) -> ReportData:
 
         cur.execute(
             "SELECT id, asset_id, source_tool, source_tool_version, category, "
-            "       parsed, severity_hint, confidence, collected_at "
+            "       parsed, confidence, collected_at "
             "FROM evidence_items WHERE run_id = %s ORDER BY collected_at",
             (str(run_id),),
         )
@@ -47,31 +47,28 @@ def load_run(dsn: str, run_id: UUID) -> ReportData:
              "asset_id": str(r[1]) if r[1] else None,
              "source_tool": r[2], "source_tool_version": r[3],
              "category": r[4], "parsed": r[5],
-             "severity_hint": r[6], "confidence": r[7],
-             "collected_at": r[8].isoformat() if r[8] else None}
+             "confidence": r[6],
+             "collected_at": r[7].isoformat() if r[7] else None}
             for r in cur.fetchall()
         ]
 
         cur.execute(
-            "SELECT id, asset_id, domain, title, description, severity, "
-            "       cwe, cve, cis_controls, evidence_ids, produced_by_agent "
-            "FROM findings WHERE run_id = %s "
-            "ORDER BY CASE severity "
-            "  WHEN 'critical' THEN 0 WHEN 'high' THEN 1 "
-            "  WHEN 'medium'   THEN 2 WHEN 'low'  THEN 3 ELSE 4 END",
+            "SELECT id, asset_id, domain, topic, summary, detail, facts, "
+            "       related_asset_ids, evidence_ids, produced_by_agent "
+            "FROM observations WHERE run_id = %s "
+            "ORDER BY domain, topic",
             (str(run_id),),
         )
-        findings = [
+        observations = [
             {"id": str(r[0]), "asset_id": str(r[1]) if r[1] else None,
-             "domain": r[2], "title": r[3], "description": r[4],
-             "severity": r[5], "cwe": r[6], "cve": r[7],
-             "cis_controls": r[8],
-             "evidence_ids": [str(e) for e in (r[9] or [])],
-             "produced_by_agent": r[10]}
+             "domain": r[2], "topic": r[3], "summary": r[4], "detail": r[5],
+             "facts": r[6] or {},
+             "related_asset_ids": [str(a) for a in (r[7] or [])],
+             "evidence_ids": [str(e) for e in (r[8] or [])],
+             "produced_by_agent": r[9]}
             for r in cur.fetchall()
         ]
 
     return ReportData(
-        run=run, assets=assets, evidence=evidence,
-        findings=findings, blueprints=[],   # blueprints table arrives in Phase 2
+        run=run, assets=assets, evidence=evidence, observations=observations,
     )

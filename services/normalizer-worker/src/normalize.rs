@@ -42,7 +42,6 @@ pub async fn normalize_one(
         asset_id,
         &result.parsed,
         result.confidence,
-        result.severity_hint.as_deref(),
     )
     .await?;
 

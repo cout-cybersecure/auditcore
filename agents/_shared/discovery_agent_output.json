@@ -1,0 +1,33 @@
+{
+  "$id": "https://schemas.auditcore.dev/v1/agents/discovery_agent_output.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DiscoveryAgentOutput",
+  "description": "Standard output envelope for discovery agents (security, performance, cloud, k8s, db, hardware, network, software). Each observation is a precise FACTUAL statement about discovered system functionality. Observations MUST cite evidence_ids. There is deliberately NO severity, score, or recommendation — AuditCore describes what exists and how it works, it does not judge or prescribe.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["observations"],
+  "properties": {
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["asset_id", "topic", "summary", "detail", "evidence_ids"],
+        "properties": {
+          "asset_id":          { "type": "string", "format": "uuid" },
+          "topic":             { "type": "string", "maxLength": 120, "description": "short label, e.g. 'SSH authentication', 'NUMA layout', 'IAM trust policy'" },
+          "summary":           { "type": "string", "maxLength": 280, "description": "one-line factual statement of what was found" },
+          "detail":            { "type": "string", "maxLength": 8000, "description": "exhaustive, precise description of the functionality: exact values, versions, configuration, behavior, and how the pieces interconnect" },
+          "facts":             { "type": "object", "description": "structured key/value extraction of the precise facts (ports, versions, flags, counts, identifiers)" },
+          "related_asset_ids": { "type": "array", "items": { "type": "string", "format": "uuid" }, "default": [], "description": "other assets this functionality interacts with" },
+          "evidence_ids":      { "type": "array", "minItems": 1, "items": { "type": "string", "format": "uuid" } }
+        }
+      }
+    },
+    "coverage_notes": {
+      "type": "array",
+      "description": "where the agent looked but found no data, or where additional collection would reveal more functionality",
+      "items": { "type": "string", "maxLength": 400 }
+    }
+  }
+}

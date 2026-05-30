@@ -1,65 +1,37 @@
 {
   "$defs": {
     "Domain": {
+      "description": "Discovery domains. These name *what kind of system functionality* an\nobservation describes \u2014 not a risk category.",
       "enum": [
         "security",
         "performance",
         "cloud",
         "k8s",
         "db",
-        "hardware"
+        "hardware",
+        "network",
+        "software"
       ],
       "title": "Domain",
       "type": "string"
-    },
-    "Severity": {
-      "enum": [
-        "info",
-        "low",
-        "medium",
-        "high",
-        "critical"
-      ],
-      "title": "Severity",
-      "type": "string"
     }
   },
-  "$id": "https://schemas.auditcore.dev/v1/finding.json",
+  "$id": "https://schemas.auditcore.dev/v1/observation.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A precise, factual statement about discovered system functionality.\n\nObservations are descriptive, not evaluative: they record *what exists and\nhow it works*, in exhaustive detail, every claim backed by evidence. There\nis deliberately no severity, score, or recommendation \u2014 AuditCore reports\nfacts, it does not judge or prescribe.",
   "properties": {
     "asset_id": {
       "format": "uuid",
       "title": "Asset Id",
       "type": "string"
     },
-    "cis_controls": {
-      "items": {
-        "type": "string"
-      },
-      "title": "Cis Controls",
-      "type": "array"
-    },
     "created_at": {
       "format": "date-time",
       "title": "Created At",
       "type": "string"
     },
-    "cve": {
-      "items": {
-        "type": "string"
-      },
-      "title": "Cve",
-      "type": "array"
-    },
-    "cwe": {
-      "items": {
-        "type": "string"
-      },
-      "title": "Cwe",
-      "type": "array"
-    },
-    "description": {
-      "title": "Description",
+    "detail": {
+      "title": "Detail",
       "type": "string"
     },
     "domain": {
@@ -72,6 +44,11 @@
       },
       "title": "Evidence Ids",
       "type": "array"
+    },
+    "facts": {
+      "additionalProperties": true,
+      "title": "Facts",
+      "type": "object"
     },
     "id": {
       "format": "uuid",
@@ -86,24 +63,21 @@
       "title": "Produced By Agent",
       "type": "string"
     },
+    "related_asset_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Related Asset Ids",
+      "type": "array"
+    },
     "run_id": {
       "format": "uuid",
       "title": "Run Id",
       "type": "string"
     },
-    "severity": {
-      "$ref": "#/$defs/Severity"
-    },
-    "status": {
-      "default": "open",
-      "enum": [
-        "open",
-        "accepted_risk",
-        "fixed",
-        "false_positive",
-        "in_conflict"
-      ],
-      "title": "Status",
+    "summary": {
+      "title": "Summary",
       "type": "string"
     },
     "tenant_id": {
@@ -111,8 +85,8 @@
       "title": "Tenant Id",
       "type": "string"
     },
-    "title": {
-      "title": "Title",
+    "topic": {
+      "title": "Topic",
       "type": "string"
     }
   },
@@ -122,14 +96,14 @@
     "run_id",
     "asset_id",
     "domain",
-    "title",
-    "description",
-    "severity",
+    "topic",
+    "summary",
+    "detail",
     "evidence_ids",
     "produced_by_agent",
     "model_used",
     "created_at"
   ],
-  "title": "Finding",
+  "title": "Observation",
   "type": "object"
 }

@@ -50,7 +50,6 @@ impl Parser for LscpuParser {
         Ok(ParseResult {
             parsed: Value::Object(parsed),
             confidence,
-            severity_hint: None,
             asset_hint: Some(asset_hint),
             redactions: vec![],
         })

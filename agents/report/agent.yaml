@@ -1,9 +1,11 @@
 name: report
-version: 0.1.0
+version: 0.2.0
 purpose: |
-  Generate the two reports for an assessment run: an executive narrative
-  and an engineer remediation report. Every claim cites evidence + finding
-  IDs so reviewers can drill down.
+  Assemble the discovered observations into a precise, exhaustive description
+  of the system: how it is built and how it functions. Produces two renderings
+  of the same facts — a detailed technical document and a condensed summary.
+  Every statement cites the observation/evidence it came from. Describes; does
+  not judge, score, or recommend.
 
 task_kind: LONG_CONTEXT
 budget_hint: normal
@@ -11,18 +13,16 @@ privacy: standard
 
 inputs:
   - run_id
-  - run_metadata: object        # scope, dates, environment
-  - findings: list[Finding]     # scored + ranked
-  - scores: list[RiskScore]
-  - blueprints: list[BlueprintItem]
-  - tenant_brand: object        # name, contact, primary color (optional)
+  - run_metadata: object            # scope, dates, environment
+  - assets: list[Asset]
+  - observations: list[Observation] # the discovered facts
+  - tenant_brand: object            # name, contact (optional)
 
 output_schema: schemas/output.json
 system_prompt: prompts/system.md
 
 contract:
-  - Every section body MAY embed references using `[[evidence:UUID]]`,
-    `[[finding:UUID]]`, `[[blueprint:UUID]]` — the renderer expands them.
-  - Executive sections must NOT include raw tool output or CLI snippets.
-  - Engineer sections SHOULD include exact commands, SQL, or IaC diffs
-    pulled from blueprints.
+  - Every section body MAY embed references using `[[observation:UUID]]`,
+    `[[evidence:UUID]]`, `[[asset:UUID]]` — the renderer expands them.
+  - Every factual statement MUST trace to an observation in the input.
+  - No severity, scoring, prioritization, or recommendations anywhere.

@@ -1,0 +1,94 @@
+{% extends "_base.html.j2" %}
+{% block title %}AuditCore System Description — run {{ data.run.id }}{% endblock %}
+{% block body %}
+<h1>AuditCore System Description</h1>
+<p class="meta">Run <code>{{ data.run.id }}</code> · status <strong>{{ data.run.status }}</strong>
+   · started {{ data.run.started_at }}
+   {% if data.run.completed_at %}· completed {{ data.run.completed_at }}{% endif %}</p>
+<p>This document describes the assessed system exactly as discovered: what
+   exists and how it functions. Every statement traces to collected evidence.
+   It is purely descriptive — facts only.</p>
+
+<h2>Scope &amp; coverage</h2>
+<div class="count-bar">
+  <div><strong>{{ data.assets|length }}</strong><div>assets</div></div>
+  <div><strong>{{ data.observations|length }}</strong><div>observations</div></div>
+  <div><strong>{{ data.evidence|length }}</strong><div>evidence items</div></div>
+</div>
+<table>
+  <thead><tr><th>Evidence category</th><th>Items collected</th></tr></thead>
+  <tbody>
+    {% for cat, n in evidence_by_category.items() %}
+    <tr><td>{{ cat }}</td><td>{{ n }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Assets ({{ data.assets|length }})</h2>
+{% if data.assets %}
+<table>
+  <thead><tr><th>Name</th><th>Type</th><th>Natural key</th><th>Discovered attributes</th></tr></thead>
+  <tbody>
+    {% for a in data.assets %}
+    <tr>
+      <td>{{ a.name }}</td>
+      <td>{{ a.type }}</td>
+      <td><code>{{ a.natural_key }}</code></td>
+      <td>
+        {% for k, v in (a.attributes or {}).items() if v is not none %}
+          <div><span class="meta">{{ k }}:</span> {{ v }}</div>
+        {% endfor %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="meta">No assets discovered.</p>
+{% endif %}
+
+<h2>Functional description by domain</h2>
+{% if domains %}
+{% for domain, observations in domains %}
+<h3><span class="domain-tag">{{ domain_labels.get(domain, domain) }}</span></h3>
+{% for o in observations %}
+<div class="obs">
+  <div class="summary">{{ o.topic }} — {{ o.summary }}</div>
+  <div>{{ o.detail | md | safe }}</div>
+  {% if o.facts %}
+  <div class="facts">
+    {% for k, v in o.facts.items() %}<code>{{ k }} = {{ v }}</code>{% endfor %}
+  </div>
+  {% endif %}
+  <p class="ref">asset {{ o.asset_id }}
+    · evidence {% for eid in o.evidence_ids %}{{ eid }}{% if not loop.last %}, {% endif %}{% endfor %}
+    · {{ o.produced_by_agent }}</p>
+</div>
+{% endfor %}
+{% endfor %}
+{% else %}
+<p class="meta">No observations recorded — discovery agents have not run yet, or this is a raw-inventory run.</p>
+{% endif %}
+
+<h2>Evidence inventory ({{ data.evidence|length }})</h2>
+<table>
+  <thead><tr><th>Tool</th><th>Version</th><th>Category</th><th>Confidence</th><th>Collected at</th></tr></thead>
+  <tbody>
+    {% for e in data.evidence %}
+    <tr>
+      <td><code>{{ e.source_tool }}</code></td>
+      <td>{{ e.source_tool_version }}</td>
+      <td>{{ e.category }}</td>
+      <td>{{ '%.2f' | format(e.confidence) }}</td>
+      <td class="meta">{{ e.collected_at }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Methodology</h2>
+<p>This description was rendered directly from normalized data. Every
+   observation cites at least one evidence item (a database-enforced
+   invariant). Re-render at any time:</p>
+<pre>auditcore-report render {{ data.run.id }} --audience technical --out description.html</pre>
+{% endblock %}

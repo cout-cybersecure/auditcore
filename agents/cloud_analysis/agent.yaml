@@ -1,0 +1,27 @@
+name: cloud_analysis
+version: 0.2.0
+purpose: |
+  Strategically and exhaustively discover how a cloud account's functionality
+  is configured: IAM principals/policies/trust relationships, network
+  topology and exposure, storage configuration and access, compute inventory,
+  logging and audit configuration, and how resources interconnect. Output
+  precise factual observations of the cloud architecture. Does NOT rate,
+  score, or recommend.
+
+task_kind: REASON
+budget_hint: normal
+privacy: standard
+
+inputs:
+  - run_id
+  - asset_ids: list[UUID]
+  - evidence_ids: list[UUID]   # filtered to category=cloud
+
+output_schema: ../_shared/discovery_agent_output.json
+system_prompt: prompts/system.md
+
+contract:
+  - Every observation MUST cite at least one evidence_id from inputs.
+  - Observations are factual descriptions, never judgments or recommendations.
+  - Record exact identifiers (ARNs, account IDs, CIDRs) only when present in
+    evidence; never invent.

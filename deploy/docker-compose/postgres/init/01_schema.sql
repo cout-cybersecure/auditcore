@@ -9,14 +9,15 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- ---------------------------------------------------------------------------
 
 CREATE TYPE run_status AS ENUM (
-    'planning', 'collecting', 'normalizing', 'analyzing',
-    'scoring', 'blueprinting', 'reporting', 'complete', 'failed'
+    'planning', 'collecting', 'normalizing', 'discovering',
+    'reporting', 'complete', 'failed'
 );
 
-CREATE TYPE severity AS ENUM ('info', 'low', 'medium', 'high', 'critical');
-
+-- Discovery domains: what KIND of system functionality an observation
+-- describes. Not a risk taxonomy.
 CREATE TYPE domain AS ENUM (
-    'security', 'performance', 'cloud', 'k8s', 'db', 'hardware'
+    'security', 'performance', 'cloud', 'k8s', 'db',
+    'hardware', 'network', 'software'
 );
 
 CREATE TYPE asset_type AS ENUM (
@@ -94,7 +95,6 @@ CREATE TABLE evidence_items (
     category            TEXT NOT NULL,
     raw_ref             TEXT NOT NULL,                 -- object store URI
     parsed              JSONB,                          -- NULL until normalized
-    severity_hint       severity,
     confidence          REAL NOT NULL CHECK (confidence BETWEEN 0.0 AND 1.0),
     redactions          TEXT[] NOT NULL DEFAULT '{}',
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -119,30 +119,36 @@ AFTER INSERT ON evidence_items
 FOR EACH ROW EXECUTE FUNCTION notify_evidence_ready();
 
 -- ---------------------------------------------------------------------------
--- Findings (table defined now; populated by agents in Phase 2)
+-- Observations
+--
+-- A precise, factual statement about discovered system functionality. Purely
+-- descriptive: what exists and how it works. No severity, score, or
+-- recommendation. Every observation cites at least one evidence item
+-- (enforced by the array_length CHECK) — the integrity guarantee of a
+-- discovery-and-description tool.
 -- ---------------------------------------------------------------------------
 
-CREATE TABLE findings (
-    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id         UUID NOT NULL REFERENCES tenants(id),
-    run_id            UUID NOT NULL REFERENCES runs(id),
-    asset_id          UUID NOT NULL REFERENCES assets(id),
-    domain            domain NOT NULL,
-    title             TEXT NOT NULL,
-    description       TEXT NOT NULL,
-    severity          severity NOT NULL,
-    cwe               TEXT[] NOT NULL DEFAULT '{}',
-    cve               TEXT[] NOT NULL DEFAULT '{}',
-    cis_controls      TEXT[] NOT NULL DEFAULT '{}',
-    evidence_ids      UUID[] NOT NULL
-                      CHECK (array_length(evidence_ids, 1) > 0),
-    produced_by_agent TEXT NOT NULL,
-    model_used        TEXT NOT NULL,
-    status            TEXT NOT NULL DEFAULT 'open',
-    created_at        TIMESTAMPTZ NOT NULL DEFAULT now()
+CREATE TABLE observations (
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id          UUID NOT NULL REFERENCES tenants(id),
+    run_id             UUID NOT NULL REFERENCES runs(id),
+    asset_id           UUID NOT NULL REFERENCES assets(id),
+    domain             domain NOT NULL,
+    topic              TEXT NOT NULL,          -- short label, e.g. "SSH authentication"
+    summary            TEXT NOT NULL,          -- one-line factual statement
+    detail             TEXT NOT NULL,          -- exhaustive precise description
+    facts              JSONB NOT NULL DEFAULT '{}'::jsonb,  -- structured key/values
+    related_asset_ids  UUID[] NOT NULL DEFAULT '{}',        -- functional relationships
+    evidence_ids       UUID[] NOT NULL
+                       CHECK (array_length(evidence_ids, 1) > 0),
+    produced_by_agent  TEXT NOT NULL,
+    model_used         TEXT NOT NULL,
+    created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX findings_run_severity_idx ON findings (run_id, severity);
+CREATE INDEX observations_run_domain_idx ON observations (run_id, domain);
+CREATE INDEX observations_asset_idx      ON observations (asset_id);
+CREATE INDEX observations_topic_idx      ON observations (run_id, topic);
 
 -- ---------------------------------------------------------------------------
 -- Audit log

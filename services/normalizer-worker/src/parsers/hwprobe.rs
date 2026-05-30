@@ -34,7 +34,6 @@ impl Parser for HwprobeParser {
         Ok(ParseResult {
             parsed: doc,
             confidence,
-            severity_hint: None,
             asset_hint: Some(AssetHint {
                 asset_type: "host".to_string(),
                 natural_key: format!("host:{host_id}"),

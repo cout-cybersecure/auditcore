@@ -187,7 +187,7 @@ def list_evidence(run_id: UUID) -> JSONResponse:
         cur.execute(
             """
             SELECT id, asset_id, source_tool, source_tool_version, category,
-                   raw_ref, parsed, severity_hint, confidence, collected_at
+                   raw_ref, parsed, confidence, collected_at
               FROM evidence_items
              WHERE run_id = %s
              ORDER BY collected_at
@@ -203,9 +203,8 @@ def list_evidence(run_id: UUID) -> JSONResponse:
                 "category": r[4],
                 "raw_ref": r[5],
                 "parsed": r[6],
-                "severity_hint": r[7],
-                "confidence": r[8],
-                "collected_at": r[9].isoformat(),
+                "confidence": r[7],
+                "collected_at": r[8].isoformat(),
             }
             for r in cur.fetchall()
         ]

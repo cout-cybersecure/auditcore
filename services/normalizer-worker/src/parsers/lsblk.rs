@@ -58,7 +58,6 @@ impl Parser for LsblkParser {
         Ok(ParseResult {
             parsed: doc,
             confidence: if total_disks > 0 { 0.9 } else { 0.5 },
-            severity_hint: None,
             asset_hint: Some(asset_hint),
             redactions: vec![],
         })

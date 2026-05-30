@@ -24,8 +24,8 @@ def main() -> None:
 @main.command()
 @click.argument("run_id")
 @click.option("--dsn", default=DEFAULT_DSN, show_default=True)
-@click.option("--audience", type=click.Choice(["engineer", "executive"]),
-              default="engineer", show_default=True)
+@click.option("--audience", type=click.Choice(["technical", "summary"]),
+              default="technical", show_default=True)
 @click.option("--out", "out_path", type=click.Path(dir_okay=False, path_type=Path),
               default=None, help="output file (defaults to stdout)")
 @click.option("--pdf", is_flag=True, help="render PDF instead of HTML (needs the pdf extra)")

@@ -1,9 +1,11 @@
 name: database
-version: 0.1.0
+version: 0.2.0
 purpose: |
-  Interpret database evidence: slow queries, indexes, connection pressure,
-  replication lag, cache hit ratios, storage bottlenecks. Recommend
-  tuning + architectural improvements.
+  Strategically and exhaustively discover how a database's functionality is
+  configured and behaves: schema and indexing, query workload characteristics,
+  connection and concurrency behavior, replication topology, caching, storage
+  layout, and configuration parameters. Output precise factual observations
+  of the database's structure and behavior. Does NOT rate, score, or recommend.
 
 task_kind: REASON
 budget_hint: normal
@@ -14,5 +16,11 @@ inputs:
   - asset_ids: list[UUID]
   - evidence_ids: list[UUID]   # filtered to category=database
 
-output_schema: ../_shared/domain_agent_output.json
+output_schema: ../_shared/discovery_agent_output.json
 system_prompt: prompts/system.md
+
+contract:
+  - Every observation MUST cite at least one evidence_id from inputs.
+  - Observations are factual descriptions, never judgments or recommendations.
+  - Record exact table/index/parameter names and measured values from evidence;
+    never invent.

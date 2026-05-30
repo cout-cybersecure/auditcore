@@ -8,7 +8,6 @@
   "properties": {
     "parsed":         { "type": "object" },
     "confidence":     { "type": "number", "minimum": 0.0, "maximum": 1.0 },
-    "severity_hint":  { "enum": ["info","low","medium","high","critical", null] },
     "asset_hint": {
       "type": ["object", "null"],
       "additionalProperties": false,

@@ -49,13 +49,6 @@
       "title": "Id",
       "type": "string"
     },
-    "importance": {
-      "default": 3,
-      "maximum": 5,
-      "minimum": 1,
-      "title": "Importance",
-      "type": "integer"
-    },
     "last_seen": {
       "format": "date-time",
       "title": "Last Seen",

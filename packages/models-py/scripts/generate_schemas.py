@@ -10,19 +10,14 @@ from pathlib import Path
 
 from auditcore_models import (
     Asset,
-    BlueprintItem,
     EvidenceItem,
-    Finding,
-    Recommendation,
+    Observation,
     ReportSection,
-    RiskScore,
     Run,
-    VerificationTest,
 )
 
 MODELS = [
-    Run, Asset, EvidenceItem, Finding, RiskScore,
-    Recommendation, BlueprintItem, VerificationTest, ReportSection,
+    Run, Asset, EvidenceItem, Observation, ReportSection,
 ]
 
 REPO_ROOT = Path(__file__).resolve().parents[3]

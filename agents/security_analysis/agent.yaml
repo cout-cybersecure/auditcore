@@ -1,10 +1,12 @@
 name: security_analysis
-version: 0.1.0
+version: 0.2.0
 purpose: |
-  Interpret normalized security evidence. Identify exposed services,
-  weak configuration, risky IAM, patch gaps, TLS issues, K8s exposure,
-  and leaked secrets. Emit findings + recommendations referencing
-  evidence_items.
+  Strategically and exhaustively discover how a system's security-relevant
+  functionality is configured and behaves: authentication mechanisms,
+  exposed services and ports, account/group/permission structure, TLS
+  configuration, firewall rules, patch state, secrets handling, Kubernetes
+  exposure. Output precise factual observations — what exists and how it
+  works. Does NOT rate, score, or recommend.
 
 task_kind: REASON
 budget_hint: normal
@@ -15,13 +17,10 @@ inputs:
   - asset_ids: list[UUID]
   - evidence_ids: list[UUID]   # pre-filtered to category=security
 
-output_schema: schemas/security_analysis_output.json
+output_schema: ../_shared/discovery_agent_output.json
+system_prompt: prompts/system.md
 
 contract:
-  - Every finding MUST list at least one evidence_id from inputs.
-  - Severity MUST be one of: info, low, medium, high, critical.
-  - description SHOULD explain impact and reference the asset.
-  - DO NOT invent CVEs; only cite CVEs present in input evidence.
-
-system_prompt: prompts/system.md
-user_prompt_template: prompts/user.j2
+  - Every observation MUST cite at least one evidence_id from inputs.
+  - Observations are factual descriptions, never judgments or recommendations.
+  - "Record exact values (versions, ports, cipher suites, account names, permission bits) — never approximate or invent."

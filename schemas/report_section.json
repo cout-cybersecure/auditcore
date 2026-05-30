@@ -4,8 +4,8 @@
   "properties": {
     "audience": {
       "enum": [
-        "executive",
-        "engineer"
+        "technical",
+        "summary"
       ],
       "title": "Audience",
       "type": "string"
@@ -14,20 +14,12 @@
       "title": "Body Md",
       "type": "string"
     },
-    "embedded_blueprints": {
+    "embedded_observations": {
       "items": {
         "format": "uuid",
         "type": "string"
       },
-      "title": "Embedded Blueprints",
-      "type": "array"
-    },
-    "embedded_findings": {
-      "items": {
-        "format": "uuid",
-        "type": "string"
-      },
-      "title": "Embedded Findings",
+      "title": "Embedded Observations",
       "type": "array"
     },
     "id": {
