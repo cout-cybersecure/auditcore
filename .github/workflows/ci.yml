@@ -19,6 +19,7 @@ jobs:
           - packages/agents-py
           - services/ingestion-api
           - services/model-gateway
+          - services/orchestrator
           - services/report-generator
     steps:
       - uses: actions/checkout@v4
@@ -27,9 +28,12 @@ jobs:
       - name: install
         run: |
           python -m pip install -U pip
-          if [ "${{ matrix.package }}" != "packages/models-py" ]; then
-            pip install -e packages/models-py
-          fi
+          # Install the shared local packages first (skip whichever is the target).
+          for shared in packages/models-py packages/agents-py; do
+            if [ "${{ matrix.package }}" != "$shared" ]; then
+              pip install -e "$shared"
+            fi
+          done
           pip install -e "${{ matrix.package }}[dev]" || pip install -e "${{ matrix.package }}"
       - name: pytest
         run: |
